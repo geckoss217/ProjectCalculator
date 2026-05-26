@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency Cleanings | Hoarding Cleanup Estimate Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ec-calculator-wrapper" id="ecCalculator">
+    <section class="ec-header">
+      <div>
+        <span class="ec-badge">Internal Use Tool</span>
+        <h1>Hoarding Cleanup Estimate Calculator</h1>
+        <p>
+          Internal-use pricing support tool. Get a preliminary project range based on property size,
+          hoarding level, access, hazards, disposal volume, and cleaning requirements. Final pricing
+          requires review by our team.
+        </p>
+      </div>
+      <div class="ec-header-card">
+        <strong>20%</strong>
+        <span>Typical deposit required to secure scheduling after estimate approval.</span>
+      </div>
+    </section>
+
+    <section class="ec-main-grid">
+      <form class="ec-card" id="calculatorForm" novalidate>
+        <div class="ec-form-topbar">
+          <h2>Lead Information</h2>
+          <button class="ec-btn ec-btn-secondary ec-btn-small" type="button" onclick="resetCalculator()">Reset Form</button>
+        </div>
+
+        <div class="ec-lead-box form-block-top">
+          <h3>Client / Lead Details</h3>
+          <div class="ec-two-col">
+            <div class="ec-field">
+              <label for="clientFirstName">First Name <span class="required">*</span></label>
+              <input id="clientFirstName" type="text" placeholder="First name" required autocomplete="given-name" />
+            </div>
+            <div class="ec-field">
+              <label for="clientLastName">Last Name <span class="required">*</span></label>
+              <input id="clientLastName" type="text" placeholder="Last name" required autocomplete="family-name" />
+            </div>
+          </div>
+          <div class="ec-two-col">
+            <div class="ec-field">
+              <label for="clientPhone">Phone</label>
+              <input id="clientPhone" type="tel" placeholder="(415)-456-7898" inputmode="tel" maxlength="14" autocomplete="tel" />
+            </div>
+            <div class="ec-field">
+              <label for="clientEmail">Email <span class="required">*</span></label>
+              <input id="clientEmail" type="email" placeholder="name@example.com" required autocomplete="email" />
+            </div>
+          </div>
+          <div class="ec-field">
+            <label for="clientAddress">Service Address</label>
+            <input id="clientAddress" type="text" placeholder="Street, city, state, ZIP" autocomplete="street-address" />
+          </div>
+        </div>
+
+        <h2>Project Details</h2>
+
+        <div class="ec-two-col">
+          <div class="ec-field">
+            <label for="marketType">Service Market</label>
+            <select id="marketType">
+              <option value="0.95">Lower-cost / rural market</option>
+              <option value="1.00" selected>Standard market</option>
+              <option value="1.15">High-cost metro</option>
+              <option value="1.25">Premium metro / wealthy suburb</option>
+              <option value="1.40">Difficult urban market: NYC / SF / LA core</option>
+            </select>
+            <small>Use higher multipliers for expensive labor, access, disposal, or premium locations.</small>
+          </div>
+
+          <div class="ec-field">
+            <label for="propertyType">Property Type</label>
+            <select id="propertyType">
+              <option value="0.85">Studio / 1-bedroom apartment</option>
+              <option value="0.95">2-bedroom apartment</option>
+              <option value="1.00" selected>Small house</option>
+              <option value="1.20">Medium house</option>
+              <option value="1.45">Large house</option>
+              <option value="1.70">Very large property / multi-unit</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ec-two-col">
+          <div class="ec-field">
+            <label for="hoardingLevel">Hoarding Level</label>
+            <select id="hoardingLevel">
+              <option value="800">Level 1 - Light clutter / 10–30 yards</option>
+              <option value="1400">Level 2 - Moderate clutter / 30–80 yards</option>
+              <option value="2400" selected>Level 3 - Heavy clutter / 80–160 yards</option>
+              <option value="3800">Level 4 - Severe conditions / 160–250 yards</option>
+              <option value="5000">Level 5 - Extreme / 250–400+ yards</option>
+            </select>
+            <small>Level 4-5 usually requires detailed photo/video review or onsite walkthrough.</small>
+          </div>
+
+          <div class="ec-field">
+            <label for="cubicYards">Estimated Disposal Volume</label>
+            <select id="cubicYards">
+              <option value="350">Less than 10 cubic yards</option>
+              <option value="800">10–20 cubic yards</option>
+              <option value="1050" selected>20–40 cubic yards / approx. 1 dumpster</option>
+              <option value="2100">40–80 cubic yards / approx. 1–2 dumpsters</option>
+              <option value="4200">80–160 cubic yards / approx. 2–4 dumpsters</option>
+              <option value="6300">160–240 cubic yards / approx. 4–6 dumpsters</option>
+              <option value="9500">240–400 cubic yards / approx. 6–10 dumpsters</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ec-two-col">
+          <div class="ec-field">
+            <label for="roomsAffected">Rooms / Areas Affected</label>
+            <input id="roomsAffected" type="number" min="1" max="30" value="5" />
+            <small>Include bedrooms, bathrooms, garage, basement, kitchen, living room, etc.</small>
+          </div>
+
+          <div class="ec-field">
+            <label for="cleaningLevel">Cleaning Required After Removal</label>
+            <select id="cleaningLevel">
+              <option value="0">Removal only</option>
+              <option value="400">Removal + broom sweep</option>
+              <option value="800">Small deep cleaning add-on</option>
+              <option value="1300" selected>Standard deep cleaning add-on</option>
+              <option value="1800">Large / severe deep cleaning add-on</option>
+              <option value="2500">Biohazard-level cleaning / odor work</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Carpet Service</h3>
+        <div class="ec-two-col">
+          <div class="ec-field">
+            <label for="carpetService">Carpet Condition / Service Needed</label>
+            <select id="carpetService">
+              <option value="0" selected>No carpet service needed</option>
+              <option value="50">Light vacuum only / small area</option>
+              <option value="150">Carpet vacuum / moderate area</option>
+              <option value="300">Carpet shampoo / standard area</option>
+              <option value="500">Carpet shampoo / large area</option>
+              <option value="400">Carpet removal / small area</option>
+              <option value="650">Carpet removal / medium area</option>
+              <option value="800">Carpet removal / large or severe area</option>
+            </select>
+            <small>Carpet service may include vacuuming, shampooing, or removal depending on contamination, odor, and client preference.</small>
+          </div>
+          <div class="ec-field">
+            <label for="carpetNotes">Carpet Notes</label>
+            <input id="carpetNotes" type="text" placeholder="Example: living room only, full house, remove contaminated carpet" />
+          </div>
+        </div>
+
+        <h3>Hazards / Special Conditions</h3>
+        <div class="ec-checkbox-grid">
+          <label class="ec-check"><input type="checkbox" class="hazard" value="800" /> Strong odor / spoiled food</label>
+          <label class="ec-check"><input type="checkbox" class="hazard" value="1800" /> Feces or urine present</label>
+          <label class="ec-check"><input type="checkbox" class="hazard" value="900" /> Pest activity</label>
+          <label class="ec-check"><input type="checkbox" class="hazard" value="1200" /> Mold-like conditions</label>
+          <label class="ec-check"><input type="checkbox" class="hazard" value="2500" /> Sharps / needles / biohazard risk</label>
+          <label class="ec-check"><input type="checkbox" class="hazard" value="1500" /> Animals / animal waste / carcass risk</label>
+          <label class="ec-check"><input type="checkbox" class="hazard" value="800" /> Heavy furniture removal</label>
+        </div>
+
+        <h3>Additional Labor / Handling Requirements</h3>
+        <div class="ec-checkbox-grid">
+          <label class="ec-check"><input type="checkbox" class="labor-extra" value="350" /> Appliance removal required</label>
+          <label class="ec-check"><input type="checkbox" class="labor-extra" value="150" /> Mattress removal required</label>
+          <label class="ec-check"><input type="checkbox" class="labor-extra" value="750" /> Client wants items sorted / saved</label>
+          <label class="ec-check"><input type="checkbox" class="labor-extra" value="650" /> Donation / storage transport requested</label>
+          <label class="ec-check"><input type="checkbox" class="labor-extra" value="500" /> Multiple dump runs likely</label>
+          <label class="ec-check"><input type="checkbox" class="supervisor-flag" value="0" /> Supervisor review required</label>
+        </div>
+        <small class="block-help">Use these when the project requires extra handling beyond standard removal. Sorting, storage, appliances, mattresses, and multiple dump runs may significantly increase labor time.</small>
+
+        <h3>Additional Areas / Requested Tasks</h3>
+        <div class="ec-checkbox-grid">
+          <label class="ec-check"><input type="checkbox" class="extra-area" value="300" /> Attic included</label>
+          <label class="ec-check"><input type="checkbox" class="extra-area" value="300" /> Basement included</label>
+          <label class="ec-check"><input type="checkbox" class="extra-area" value="200" /> 1-car garage included</label>
+          <label class="ec-check"><input type="checkbox" class="extra-area" value="300" /> 2-car garage included</label>
+          <label class="ec-check"><input type="checkbox" class="extra-area" value="250" /> Shed included</label>
+          <label class="ec-check"><input type="checkbox" class="extra-area" value="300" /> Other requested non-cleaning tasks</label>
+        </div>
+        <small class="block-help">Additional areas or extra requested tasks may add $200–$300 depending on access and scope.</small>
+
+        <h3>Access / Logistics</h3>
+        <div class="ec-two-col">
+          <div class="ec-field">
+            <label for="accessLevel">Access Difficulty</label>
+            <select id="accessLevel">
+              <option value="1.00">Easy access / parking available</option>
+              <option value="1.06">Some stairs or elevator coordination</option>
+              <option value="1.12">Long carry distance / limited parking</option>
+              <option value="1.18">Urban building / COI / elevator restrictions</option>
+              <option value="1.28">Very difficult access / no dumpster access</option>
+            </select>
+          </div>
+
+          <div class="ec-field">
+            <label for="urgency">Scheduling Urgency</label>
+            <select id="urgency">
+              <option value="1.00">Flexible scheduling</option>
+              <option value="1.05">Within 7 days</option>
+              <option value="1.12">Within 72 hours</option>
+              <option value="1.22">Same-day / emergency response</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ec-warning">
+          This calculator provides a preliminary range only. Final pricing may change after photos,
+          video review, onsite walkthrough, scope confirmation, disposal needs, hazards, access conditions,
+          and client-approved work plan.
+        </div>
+
+        <div class="ec-actions">
+          <button class="ec-btn ec-btn-secondary" type="button" onclick="copySummary()">Copy Estimate Summary</button>
+          <button class="ec-btn ec-btn-secondary" type="button" onclick="downloadEstimatePdf()">Download PDF</button>
+        </div>
+      </form>
+
+      <aside class="ec-result-card" id="resultPanel">
+        <h2>Estimated Range</h2>
+        <p class="result-intro">Complete the form and calculate a preliminary range.</p>
+
+        <div class="ec-range">
+          <span class="label">Preliminary Estimate</span>
+          <span class="amount" id="estimateRange">$0 – $0</span>
+        </div>
+
+        <div class="ec-result-row"><span>Estimated Low Range</span><strong id="lowRange">$0</strong></div>
+        <div class="ec-result-row"><span>Estimated High Range</span><strong id="highRange">$0</strong></div>
+        <div class="ec-result-row"><span>Suggested 20% Deposit</span><strong id="depositAmount">$0</strong></div>
+        <div class="ec-result-row"><span>Project Severity</span><strong id="severityLabel">Pending</strong></div>
+        <div class="ec-result-row"><span>Lead Quality Signal</span><strong id="leadSignal">Pending</strong></div>
+
+        <div class="ec-quality-box" id="recommendationBox">
+          Recommendation will appear after calculation.
+        </div>
+
+        <table class="ec-mini-table" id="breakdownTable">
+          <thead>
+            <tr><th>Cost Driver</th><th>Impact</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Base project</td><td id="baseImpact">$0</td></tr>
+            <tr><td>Disposal volume</td><td id="volumeImpact">$0</td></tr>
+            <tr><td>Cleaning add-on</td><td id="cleanImpact">$0</td></tr>
+            <tr><td>Carpet service</td><td id="carpetImpact">$0</td></tr>
+            <tr><td>Hazards</td><td id="hazardImpact">$0</td></tr>
+            <tr><td>Additional labor/handling</td><td id="laborExtraImpact">$0</td></tr>
+            <tr><td>Additional areas/tasks</td><td id="extraImpact">$0</td></tr>
+            <tr><td>Supervisor review flag</td><td id="supervisorImpact">No</td></tr>
+            <tr><td>Market / access / urgency</td><td id="multiplierImpact">1.00x</td></tr>
+          </tbody>
+        </table>
+
+        <div class="ec-note">
+          Internal use recommendation: do not present this as a final quote. Use it as a pricing range and qualification tool before scheduling a walkthrough.
+        </div>
+      </aside>
+    </section>
+
+    <div class="ec-footer-note">
+      Emergency Cleanings estimate tool. Final pricing is subject to inspection, scope confirmation, site conditions, disposal requirements, and written approval.
+    </div>
+  </div>
+
+  <script src="calculator.js"></script>
+</body>
+</html>
