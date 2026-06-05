@@ -240,20 +240,17 @@ async function sendEstimate() {
   }
 
   const estimate = window.currentEstimate;
-  const selectedHazards      = getCheckedLabels('.hazard').join(', ')       || 'None';
-  const selectedExtras       = getCheckedLabels('.extra-area').join(', ')   || 'None';
-  const selectedLaborExtras  = getCheckedLabels('.labor-extra').join(', ')  || 'None';
-  const supervisorFlag       = document.querySelectorAll('.supervisor-flag:checked').length > 0;
+  const selectedHazards     = getCheckedLabels('.hazard').join(', ')      || 'None';
+  const selectedExtras      = getCheckedLabels('.extra-area').join(', ')  || 'None';
+  const selectedLaborExtras = getCheckedLabels('.labor-extra').join(', ') || 'None';
+  const supervisorFlag      = document.querySelectorAll('.supervisor-flag:checked').length > 0;
 
   const payload = {
-    // Client
     firstName:  document.getElementById('clientFirstName').value.trim(),
     lastName:   document.getElementById('clientLastName').value.trim(),
     phone:      document.getElementById('clientPhone').value.trim(),
     email:      document.getElementById('clientEmail').value.trim(),
     address:    document.getElementById('clientAddress').value.trim(),
-
-    // Project selects (use visible text)
     marketType:    document.getElementById('marketType').selectedOptions[0].textContent,
     propertyType:  document.getElementById('propertyType').selectedOptions[0].textContent,
     hoardingLevel: document.getElementById('hoardingLevel').selectedOptions[0].textContent,
@@ -262,30 +259,24 @@ async function sendEstimate() {
     cleaningLevel: document.getElementById('cleaningLevel').selectedOptions[0].textContent,
     carpetService: document.getElementById('carpetService').selectedOptions[0].textContent,
     carpetNotes:   document.getElementById('carpetNotes').value.trim(),
-
-    // Checkboxes
-    hazards:         selectedHazards,
-    laborExtras:     selectedLaborExtras,
-    extraAreas:      selectedExtras,
+    hazards:          selectedHazards,
+    laborExtras:      selectedLaborExtras,
+    extraAreas:       selectedExtras,
     supervisorReview: supervisorFlag,
-
-    // Estimate totals
     lowRange:    money(estimate.low),
     highRange:   money(estimate.high),
     deposit:     money(estimate.deposit),
     severity:    estimate.severity,
     signal:      estimate.signal,
     recommendation: estimate.recommendation,
-
-    // Breakdown
-    baseImpact:        money(estimate.base),
-    volumeImpact:      money(estimate.volume),
-    cleanImpact:       money(estimate.cleaning + estimate.roomAdjustment),
-    carpetImpact:      money(estimate.carpetCost),
-    hazardImpact:      money(estimate.hazardCost),
-    laborExtraImpact:  money(estimate.laborExtraCost),
-    extraImpact:       money(estimate.extraAreaCost),
-    multiplierImpact:  estimate.multiplier.toFixed(2) + 'x'
+    baseImpact:       money(estimate.base),
+    volumeImpact:     money(estimate.volume),
+    cleanImpact:      money(estimate.cleaning + estimate.roomAdjustment),
+    carpetImpact:     money(estimate.carpetCost),
+    hazardImpact:     money(estimate.hazardCost),
+    laborExtraImpact: money(estimate.laborExtraCost),
+    extraImpact:      money(estimate.extraAreaCost),
+    multiplierImpact: estimate.multiplier.toFixed(2) + 'x'
   };
 
   const btn = document.getElementById('sendEstimateBtn');
@@ -295,10 +286,9 @@ async function sendEstimate() {
   try {
     await fetch(GAS_URL, {
       method: 'POST',
-      mode: 'no-cors',       // GAS doesn't return CORS headers; no-cors still sends the data
+      mode: 'no-cors',
       body: JSON.stringify(payload)
     });
-    // Response is opaque with no-cors — assume success if fetch didn't throw
     btn.textContent = 'Sent ✓';
     setTimeout(() => {
       btn.disabled = false;
@@ -350,4 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     element.addEventListener('input', calculateEstimate);
   });
 
-  runCal
+  runCalculatorTests();
+});
+                                                                                                                                                                                                                                                                     
