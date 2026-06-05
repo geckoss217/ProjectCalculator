@@ -1,3 +1,8 @@
+// ─── Google Apps Script Web App URL ──────────────────────────────────────────
+// After deploying salescalc2-sheets.gs as a Web App, paste the URL here.
+const GAS_URL = 'https://script.google.com/a/macros/emergencycleanings.com/s/AKfycbyHfFqDkaanpWpF28O3egE74vD_P_BplCOVVCFs2Vu099PhcvtpPdQDrCt1YYUAI5kT0w/exec';
+// ─────────────────────────────────────────────────────────────────────────────
+
 function money(value) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -142,10 +147,22 @@ function calculateEstimate() {
   document.getElementById('multiplierImpact').textContent = `${multiplier.toFixed(2)}x`;
 
   window.currentEstimate = {
-    low, high, deposit, severity, signal, recommendation,
-    base, volume, cleaning, carpetCost, roomAdjustment,
-    hazardCost, extraAreaCost, laborExtraCost,
-    supervisorReviewRequired, multiplier
+    low,
+    high,
+    deposit,
+    severity,
+    signal,
+    recommendation,
+    base,
+    volume,
+    cleaning,
+    carpetCost,
+    roomAdjustment,
+    hazardCost,
+    extraAreaCost,
+    laborExtraCost,
+    supervisorReviewRequired,
+    multiplier
   };
 
   return window.currentEstimate;
@@ -211,6 +228,90 @@ function downloadEstimatePdf() {
   if (!window.currentEstimate) calculateEstimate();
   if (!validateLeadFields(true)) return;
   printEstimate();
+}
+
+async function sendEstimate() {
+  if (!window.currentEstimate) calculateEstimate();
+  if (!validateLeadFields(true)) return;
+
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') {
+    alert('Google Apps Script URL not configured. Please set GAS_URL in calculator.js.');
+    return;
+  }
+
+  const estimate = window.currentEstimate;
+  const selectedHazards      = getCheckedLabels('.hazard').join(', ')       || 'None';
+  const selectedExtras       = getCheckedLabels('.extra-area').join(', ')   || 'None';
+  const selectedLaborExtras  = getCheckedLabels('.labor-extra').join(', ')  || 'None';
+  const supervisorFlag       = document.querySelectorAll('.supervisor-flag:checked').length > 0;
+
+  const payload = {
+    // Client
+    firstName:  document.getElementById('clientFirstName').value.trim(),
+    lastName:   document.getElementById('clientLastName').value.trim(),
+    phone:      document.getElementById('clientPhone').value.trim(),
+    email:      document.getElementById('clientEmail').value.trim(),
+    address:    document.getElementById('clientAddress').value.trim(),
+
+    // Project selects (use visible text)
+    marketType:    document.getElementById('marketType').selectedOptions[0].textContent,
+    propertyType:  document.getElementById('propertyType').selectedOptions[0].textContent,
+    hoardingLevel: document.getElementById('hoardingLevel').selectedOptions[0].textContent,
+    cubicYards:    document.getElementById('cubicYards').selectedOptions[0].textContent,
+    roomsAffected: document.getElementById('roomsAffected').value,
+    cleaningLevel: document.getElementById('cleaningLevel').selectedOptions[0].textContent,
+    carpetService: document.getElementById('carpetService').selectedOptions[0].textContent,
+    carpetNotes:   document.getElementById('carpetNotes').value.trim(),
+
+    // Checkboxes
+    hazards:         selectedHazards,
+    laborExtras:     selectedLaborExtras,
+    extraAreas:      selectedExtras,
+    supervisorReview: supervisorFlag,
+
+    // Estimate totals
+    lowRange:    money(estimate.low),
+    highRange:   money(estimate.high),
+    deposit:     money(estimate.deposit),
+    severity:    estimate.severity,
+    signal:      estimate.signal,
+    recommendation: estimate.recommendation,
+
+    // Breakdown
+    baseImpact:        money(estimate.base),
+    volumeImpact:      money(estimate.volume),
+    cleanImpact:       money(estimate.cleaning + estimate.roomAdjustment),
+    carpetImpact:      money(estimate.carpetCost),
+    hazardImpact:      money(estimate.hazardCost),
+    laborExtraImpact:  money(estimate.laborExtraCost),
+    extraImpact:       money(estimate.extraAreaCost),
+    multiplierImpact:  estimate.multiplier.toFixed(2) + 'x'
+  };
+
+  const btn = document.getElementById('sendEstimateBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.success) {
+      btn.textContent = 'Sent ✓';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Email Estimate';
+      }, 3000);
+    } else {
+      throw new Error(json.error || 'Unknown error');
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Email Estimate';
+    alert('Failed to send estimate: ' + err.message);
+  }
 }
 
 function runCalculatorTests() {
