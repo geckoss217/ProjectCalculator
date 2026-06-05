@@ -283,17 +283,39 @@ async function sendEstimate() {
   btn.disabled = true;
   btn.textContent = 'Sending…';
 
+  // Use hidden iframe form-post — bypasses CORS without needing a proxy
   try {
-    await fetch(GAS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(payload)
-    });
-    btn.textContent = 'Sent ✓';
+    let iframe = document.getElementById('_gas_iframe');
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.id   = '_gas_iframe';
+      iframe.name = '_gas_iframe';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+    }
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GAS_URL;
+    form.target = '_gas_iframe';
+
+    const input = document.createElement('input');
+    input.type  = 'hidden';
+    input.name  = 'data';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+
     setTimeout(() => {
-      btn.disabled = false;
-      btn.textContent = 'Email Estimate';
-    }, 3000);
+      btn.textContent = 'Sent ✓';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Email Estimate';
+      }, 3000);
+    }, 1500);
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Email Estimate';
@@ -321,24 +343,4 @@ function runCalculatorTests() {
   assert(isValidEmail('bad-email') === false, 'Invalid email format fails validation.');
   assert(document.getElementById('clientFirstName') !== null, 'Required first name field exists.');
   assert(document.getElementById('clientLastName') !== null, 'Required last name field exists.');
-  assert(typeof downloadEstimatePdf === 'function', 'Download PDF function exists.');
-
-  const failed = assertions.filter(item => !item.pass);
-  if (failed.length === 0) {
-    console.info(`Hoarding calculator tests passed: ${assertions.length}/${assertions.length}`);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  calculateEstimate();
-
-  const phoneInput = document.getElementById('clientPhone');
-  phoneInput.addEventListener('input', handlePhoneInput);
-
-  document.querySelectorAll('#calculatorForm select, #calculatorForm input').forEach(element => {
-    element.addEventListener('change', calculateEstimate);
-    element.addEventListener('input', calculateEstimate);
-  });
-
-  runCalculatorTests();
-});
+  assert(typeof downloadEstima
