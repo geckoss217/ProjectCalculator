@@ -293,20 +293,17 @@ async function sendEstimate() {
   btn.textContent = 'Sending…';
 
   try {
-    const res = await fetch(GAS_URL, {
+    await fetch(GAS_URL, {
       method: 'POST',
+      mode: 'no-cors',       // GAS doesn't return CORS headers; no-cors still sends the data
       body: JSON.stringify(payload)
     });
-    const json = await res.json();
-    if (json.success) {
-      btn.textContent = 'Sent ✓';
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = 'Email Estimate';
-      }, 3000);
-    } else {
-      throw new Error(json.error || 'Unknown error');
-    }
+    // Response is opaque with no-cors — assume success if fetch didn't throw
+    btn.textContent = 'Sent ✓';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = 'Email Estimate';
+    }, 3000);
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Email Estimate';
@@ -353,5 +350,4 @@ document.addEventListener('DOMContentLoaded', () => {
     element.addEventListener('input', calculateEstimate);
   });
 
-  runCalculatorTests();
-});
+  runCal
